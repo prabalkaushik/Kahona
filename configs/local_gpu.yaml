@@ -1,0 +1,59 @@
+# "local_gpu" tier — fully offline, no API key, no internet required at
+# runtime. ASR and LLM both run on your GPU. Sized for 4GB VRAM
+# (e.g. GTX 1650): Whisper base.en (~150MB) + Qwen2.5-3B-Instruct at
+# Q4_K_M (~1.93GB) comfortably fit together with headroom.
+#
+# Trade-off vs configs/gpu.yaml: no cloud dependency, but a local 3B model
+# is noticeably less capable than gpt-4o-mini on OpenAI, and will
+# likely have higher time-to-first-token than OpenAI's inference despite
+# running locally.
+#
+# Needs: CUDA + cuDNN, and llama-cpp-python built with CUDA support (the
+# default `pip install llama-cpp-python` gives you a CPU-only build — see
+# docs/local_gpu_setup.md for the correct install command). Also run
+# `python scripts/download_local_llm.py` first.
+
+vad:
+  model: silero_vad
+  sample_rate: 16000
+  frame_ms: 32
+  threshold: 0.5
+  silence_timeout_ms: 700
+  min_speech_ms: 250
+
+asr:
+  backend: faster_whisper
+  model_size: base.en
+  device: cuda
+  compute_type: float16
+  beam_size: 2
+  language: en
+
+llm:
+  backend: local_gpu
+  model_path: models/llm/qwen2.5-3b-instruct-q4_k_m.gguf
+  n_gpu_layers: -1               # offload all layers to GPU
+  context_length: 4096
+  max_tokens: 300
+  temperature: 0.7
+  stream: true
+  system_prompt: >
+    You are Kahona, a helpful, concise voice assistant. Keep responses short and
+    conversational — you are being spoken aloud, not read as text. Avoid
+    lists, markdown, or long explanations unless explicitly asked.
+
+tts:
+  backend: piper
+  voice: en_US-lessac-medium
+  voice_dir: models/piper
+  sentence_chunking: true
+  sample_rate: 22050
+
+audio_io:
+  input_device: null
+  output_device: null
+  channels: 1
+
+logging:
+  level: INFO
+  log_latency_breakdown: true

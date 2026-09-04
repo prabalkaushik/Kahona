@@ -1,0 +1,45 @@
+# "fast" tier — smallest models, lowest latency.
+# Tuned as the default for 8GB RAM / CPU-only machines.
+
+vad:
+  model: silero_vad          # ONNX, downloaded/cached automatically
+  sample_rate: 16000
+  frame_ms: 32                # analysis window
+  threshold: 0.001               # lowered threshold because mic volume is extremely low
+  silence_timeout_ms: 1000       # Phase 1: fixed silence -> end-of-turn
+                                  # (replaced by the learned classifier in Phase 3)
+  min_speech_ms: 250              # ignore blips shorter than this
+
+asr:
+  backend: faster_whisper
+  model_size: tiny.en               # ~75MB, fastest accurate CPU option
+  compute_type: int8                 # quantized for CPU speed + low RAM
+  beam_size: 1                        # greedy decoding = lowest latency
+  language: en
+
+llm:
+  backend: openai
+  model: gpt-4o-mini
+  max_tokens: 300
+  temperature: 0.7
+  stream: true
+  system_prompt: >
+    You are Kahona, a helpful, concise voice assistant. Keep responses short and
+    conversational — you are being spoken aloud, not read as text. Avoid
+    lists, markdown, or long explanations unless explicitly asked.
+
+tts:
+  backend: piper
+  voice: en_US-lessac-medium         # balance of speed/quality, ~60MB
+  voice_dir: models/piper
+  sentence_chunking: true             # start speaking before full LLM reply is done
+  sample_rate: 22050
+
+audio_io:
+  input_device: null                    # null = system default mic
+  output_device: null                    # null = system default speaker
+  channels: 1
+
+logging:
+  level: INFO
+  log_latency_breakdown: true             # per-stage timing, needed for Phase 2 benchmarking

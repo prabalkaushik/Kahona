@@ -1,0 +1,39 @@
+# --- Core audio I/O ---
+sounddevice==0.4.7
+numpy
+# --- VAD (ONNX runtime, no torch) ---
+onnxruntime
+
+# --- ASR (CTranslate2-based, no torch) ---
+faster-whisper
+
+# --- TTS: no pip package here. We use Piper's standalone binary release
+# (downloaded by scripts/download_piper_voice.py) instead of the piper-tts
+# pip package, because that package depends on piper-phonemize, which has
+# very inconsistent prebuilt-wheel availability across Python versions and
+# platforms. The binary approach is more reliable across machines.
+
+# --- LLM client (hosted, fast inference) ---
+openai
+
+# --- Local GPU LLM (configs/local_gpu.yaml only) ---
+# NOT pinned/installed here on purpose: llama-cpp-python needs a CUDA-
+# specific install command (not a plain `pip install`) to get GPU support.
+# See docs/local_gpu_setup.md for the exact command for your platform.
+# If you're only using configs/fast.yaml, configs/balanced.yaml, or
+# configs/gpu.yaml (OpenAI LLM), you don't need this at all.
+#
+# llama-cpp-python  # <- install per docs/local_gpu_setup.md, not via this file
+
+# --- GPU-accelerated ASR (configs/gpu.yaml, configs/local_gpu.yaml only) ---
+# faster-whisper (above) already supports CUDA once the NVIDIA runtime
+# libraries are present — see docs/local_gpu_setup.md. No extra pip
+# package needed here.
+
+# --- Config / env ---
+pydantic
+pydantic-settings
+python-dotenv
+PyYAML
+# --- Utilities ---
+requests

@@ -1,0 +1,51 @@
+# "gpu" tier — for machines with a CUDA GPU (e.g. GTX 1650 4GB).
+# ASR runs on GPU (faster + more accurate model fits easily). LLM stays on
+# OpenAI's cloud for the best latency/quality — no local VRAM contention
+# with a local LLM. TTS stays on CPU (Piper is already fast; no benefit
+# from GPU here, and it leaves your VRAM entirely to Whisper).
+#
+# Needs: CUDA + cuDNN available (see docs/local_gpu_setup.md), plus an
+# OpenAI API key (see .env.example).
+
+vad:
+  model: silero_vad
+  sample_rate: 16000
+  frame_ms: 32
+  threshold: 0.5
+  silence_timeout_ms: 700
+  min_speech_ms: 250
+
+asr:
+  backend: faster_whisper
+  model_size: base.en          # bumped up from tiny.en — GPU makes this cheap
+  device: cuda
+  compute_type: float16          # GTX 1650 supports fp16 well
+  beam_size: 2
+  language: en
+
+llm:
+  backend: openai
+  model: gpt-4o-mini
+  max_tokens: 300
+  temperature: 0.7
+  stream: true
+  system_prompt: >
+    You are Kahona, a helpful, concise voice assistant. Keep responses short and
+    conversational — you are being spoken aloud, not read as text. Avoid
+    lists, markdown, or long explanations unless explicitly asked.
+
+tts:
+  backend: piper
+  voice: en_US-lessac-medium
+  voice_dir: models/piper
+  sentence_chunking: true
+  sample_rate: 22050
+
+audio_io:
+  input_device: null
+  output_device: null
+  channels: 1
+
+logging:
+  level: INFO
+  log_latency_breakdown: true
