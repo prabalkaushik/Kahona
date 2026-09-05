@@ -139,4 +139,4 @@ voice-agent/
 - Turn-taking is silence-based (fixed timeout) — this is what Phase 3 fixes.
 - No barge-in: if you talk while the agent is speaking, it won't stop
   (Phase 2).
-- Single-user, local mic only — no server/remote clients yet (Phase 5).
+- Single-user, local mic only — no server/remote clients yet.
