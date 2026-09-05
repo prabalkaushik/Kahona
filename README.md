@@ -1,12 +1,12 @@
 # Kahona — Ultra Low-Latency Production-Grade Speech-to-Speech Pipeline (Phase 1)
 
-Welcome to the foundation of Kahona, a cutting-edge, production-grade speech-to-speech conversational agent. We are building a mesmerizingly fast, incredibly lightweight voice assistant designed to run seamlessly even on modest hardware (like an 8GB RAM CPU-only laptop) without compromising on quality. 
+Welcome to the foundation of Kahona, a cutting-edge, production-grade speech-to-speech conversational agent. We are building a mesmerizingly fast, incredibly lightweight voice assistant designed to run seamlessly even on modest hardware without compromising on quality. 
 
-Currently in **Phase 1 (Baseline)**, this pipeline establishes a robust, highly modular core. While you will already experience impressive speeds today, **the absolute "least latency" and true conversational fluidity will be achieved by Phase 4**, where we introduce advanced paralinguistic-aware prompting and full-duplex backchanneling.
+Currently in **Phase 1 (Baseline)**, this pipeline establishes a robust, highly modular core. While you will already experience impressive speeds today, **the absolute "least latency" and true conversational fluidity will be achieved by Phase 4**, where I introduce advanced paralinguistic-aware prompting and full-duplex backchanneling.
 
 ## Why this architecture
 
-On an 8GB RAM / CPU-only machine, running ASR + a capable LLM + TTS all
+On an CPU-only machine, running ASR + a capable LLM + TTS all
 locally at once is not realistic — a usable local LLM alone needs several GB
 even quantized, leaving nothing for the audio models or the OS.
 
@@ -14,7 +14,7 @@ So Phase 1 makes one deliberate split:
 
 - **Local, CPU, ONNX/CTranslate2-based (no PyTorch)**: VAD, ASR, TTS.
   These are all small enough (tens to a few hundred MB) to run comfortably
-  alongside each other on 8GB RAM.
+  alongside each other.
 - **Remote, via OpenAI API**: the LLM. OpenAI's inference is robust and
   can be very fast, compensating for the network hop.
 
